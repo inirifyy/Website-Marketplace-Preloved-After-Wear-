@@ -1,0 +1,1 @@
+daftar barang milik penjual dan status ready/habis.
