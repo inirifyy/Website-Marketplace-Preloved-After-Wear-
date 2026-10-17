@@ -1,0 +1,1 @@
+Halaman utama: banner bergantian, kategori, dan daftar produk.

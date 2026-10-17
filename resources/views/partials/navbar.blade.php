@@ -1,0 +1,1 @@
+logo After Wear, pencarian, lokasi, tombol Jual Barang, login, dan profil.

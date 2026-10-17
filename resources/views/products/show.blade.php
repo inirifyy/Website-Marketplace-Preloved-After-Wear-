@@ -1,0 +1,1 @@
+detail satu produk, foto/video, harga, kondisi, lokasi, rating, dan WhatsApp.

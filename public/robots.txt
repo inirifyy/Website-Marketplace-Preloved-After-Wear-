@@ -1,2 +1,14 @@
 User-agent: *
 Disallow:
+
+Aset statis yang memang perlu diakses langsung. Foto dan video produk yang diunggah pengguna sebaiknya dikelola melalui storage Laravel.
+
+Bagian	Yang diatur
+Navbar =	Logo, kolom pencarian, tombol login dan jual barang
+Banner=	Ukuran slide dan gambar edukasi
+Kategori	=Bentuk ikon dan susunan kategori
+Kartu produk=	Foto, harga, nama, kondisi, rating
+Detail produk	=Galeri foto, deskripsi, informasi penjual
+Formulir=	Login, registrasi, dan pengajuan barang
+Dashboard	=Tabel produk, tombol edit, dan status
+Responsive= tampilan web di hp dan laptop

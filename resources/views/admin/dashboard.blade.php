@@ -1,0 +1,1 @@
+ringkasan pengelolaan.
