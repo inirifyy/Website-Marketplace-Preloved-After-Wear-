@@ -1,3 +1,35 @@
+Kelompok 4 
+Anggota : 
+- Alya Afrilia Iswanty
+- Muhammad Akmal Hidayat
+- Muhammad Rizky Isafachrie
+- Muh. Ridho Anugrah
+- Rifyah al-azizah()
+
+------- AfterWear - Platform E-Commerce Preloved Fashion --------
+
+AfterWear adalah platform e-commerce berbasis web yang berfokus pada penjualan pakaian bekas berkualitas (preloved/thrift). Aplikasi ini dirancang untuk mendukung gaya hidup sustainable fashion dengan memberikan wadah yang aman dan terstruktur bagi pengguna yang ingin menjual maupun membeli pakaian preloved.
+
+--Fitur Utama--
+-Public & Pembeli:
+    -Katalog produk interaktif dengan filter kategori dan pencarian.
+    -Halaman detail produk lengkap beserta galeri foto.
+    -Artikel edukasi mengenai sustainable fashion dan informasi tentang AfterWear.
+-Penjual (Seller):
+    -Dashboard khusus penjual untuk memantau status barang.
+    -Formulir pengajuan barang preloved (product submission) lengkap dengan pengunggahan foto.
+    -Manajemen produk yang dijual.
+-Administrator:
+    -Dashboard panel admin untuk peninjauan barang masuk.
+    -Fitur verifikasi (persetujuan atau penolakan) terhadap barang yang diajukan seller sebelum tampil di katalog publik.
+    -Pengelolaan data kategori pakaian.
+
+--Teknologi yang Digunakan--
+Framework: Laravel
+Templating Engine: Blade
+Styling: CSS3 / Bootstrap
+Database: MySQL
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
