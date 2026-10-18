@@ -1,0 +1,1 @@
+Method index, education, about, testimonials.
