@@ -1,0 +1,1 @@
+index dan updateStatus. Pastikan product->seller_id === auth()->id().

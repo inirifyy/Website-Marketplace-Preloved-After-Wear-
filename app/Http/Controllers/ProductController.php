@@ -1,0 +1,1 @@
+index (dengan q dan category) dan show. Di show, hanya tampilkan produk approval_status = approved, atau 404.
