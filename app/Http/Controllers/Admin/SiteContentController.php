@@ -1,0 +1,1 @@
+CRUD konten website, termasuk mengelola slide dan konten edukasi.

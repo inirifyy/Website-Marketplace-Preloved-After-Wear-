@@ -1,1 +1,1 @@
-formulir jual barang.
+formulir jual barang. Form pengajuan produk oleh penjual.

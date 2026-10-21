@@ -1,0 +1,1 @@
+Mengambil data slide, edukasi, dan konten beranda dari database.

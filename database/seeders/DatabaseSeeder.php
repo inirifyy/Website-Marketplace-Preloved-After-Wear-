@@ -23,3 +23,5 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 }
+
+Memanggil seeder kategori dan data awal lain yang diperlukan.
