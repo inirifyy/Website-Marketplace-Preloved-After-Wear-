@@ -1,0 +1,1 @@
+Membuat tabel kategori jika migration-nya belum tersedia.

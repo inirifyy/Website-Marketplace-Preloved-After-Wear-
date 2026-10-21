@@ -1,0 +1,1 @@
+Membuat tabel konten jika migration-nya belum tersedia.

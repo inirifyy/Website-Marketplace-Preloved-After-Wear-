@@ -1,0 +1,1 @@
+Menambahkan kolom akun yang dibutuhkan jika belum ada.
