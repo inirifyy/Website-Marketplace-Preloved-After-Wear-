@@ -1,32 +1,10 @@
-
-// use Illuminate\Support\Facades\Route;
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
-// Semua alamat halaman publik, autentikasi, penjual, dan admin.
-
-// routes/web.php menentukan ketika pengguna membuka alamat tertentu, halaman atau fungsi mana yang dijalankan.
-
-// URL	Fungsi
-// /	= Beranda
-// /products	=  Katalog produk
-// /products/1	= Detail produk dengan ID 1
-// /education	= Edukasi limbah tekstil
-// /testimonials	= Daftar testimoni
-// /login	= Login
-// /register	= Registrasi
-// /seller/products/create	= Formulir jual barang
-// /seller/products	= Produk milik penjual
-// /admin	= Dashboard admin
-
 <?php
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Seller;
 use Illuminate\Support\Facades\Route;
@@ -35,16 +13,36 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Routing After Wear (Marketplace Preloved)
 |--------------------------------------------------------------------------
-| File ini hanya menentukan "alamat URL -> controller".
+| File ini hanya menentukan "alamat URL -> controller / view".
 | Logika bisnis (validasi, simpan data, upload file) ada di controller.
 |
-| Middleware yang dipakai:
-|   auth        -> bawaan Laravel, harus login
-|   guest       -> bawaan Laravel, hanya untuk yang belum login
-|   role:...    -> middleware buatan sendiri (lihat daftar dependensi),
-|                  membatasi akses berdasarkan kolom users.role
-|                  (buyer / seller / admin)
+| Catatan: "Admin" dan "Seller" di bawah adalah nama folder controller
+| (App\Http\Controllers\Admin dan App\Http\Controllers\Seller), jadi
+| Admin\DashboardController berarti App\Http\Controllers\Admin\DashboardController.
+|
+| Rute yang memakai controller akan error ("Target class ... does not exist"
+| atau "Method ... does not exist") sampai controller itu diisi anggota
+| kelompok yang bertugas. Itu bukan kesalahan file ini.
 */
+
+/*
+|--------------------------------------------------------------------------
+| Middleware akses
+|--------------------------------------------------------------------------
+| 'auth' dan 'guest' bawaan Laravel, pasti tersedia.
+|
+| Middleware 'role' BELUM siap: app/Http/Middleware/RoleMiddleware.php masih
+| kosong dan aliasnya belum didaftarkan di bootstrap/app.php. Jika dipakai
+| sekarang, semua rute di bawahnya error "Target class [role] does not exist".
+| Karena itu sementara hanya 'auth'. Setelah RoleMiddleware selesai dan alias
+| 'role' terdaftar, ubah tiga baris ini sesuai komentar di sebelahnya.
+|
+| PERINGATAN: selama masih ['auth'], semua akun yang login (termasuk pembeli)
+| bisa membuka halaman penjual dan admin. Pasang role sebelum data asli dipakai.
+*/
+$buyerAccess = ['auth'];   // nanti: ['auth', 'role:buyer']
+$sellerAccess = ['auth'];  // nanti: ['auth', 'role:seller']
+$adminAccess = ['auth'];   // nanti: ['auth', 'role:admin']
 
 // ---------------------------------------------------------------------
 // 1. HALAMAN PUBLIK (tanpa login)
@@ -55,8 +53,13 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/education', [HomeController::class, 'education'])->name('education');
-Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/testimonials', [HomeController::class, 'testimonials'])->name('testimonials');
+
+// About: halaman statis, langsung memakai view pages/about.blade.php
+// sehingga bisa tampil tanpa menunggu HomeController selesai.
+// Jika tim ingin memindahkannya ke HomeController@about, ganti baris ini dengan:
+//     Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::view('/about', 'pages.about')->name('about');
 
 // ---------------------------------------------------------------------
 // 2. AUTENTIKASI
@@ -76,17 +79,27 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
 // ---------------------------------------------------------------------
-// 3. PEMBELI (role: buyer)
+// 3. PROFIL PENGGUNA (semua role yang sudah login)
+// ---------------------------------------------------------------------
+// View profile/show dan profile/edit sudah ada. ProfileController masih kosong.
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+// ---------------------------------------------------------------------
+// 4. PEMBELI (role: buyer)
 // ---------------------------------------------------------------------
 // Aturan ulasan (misalnya satu ulasan per produk) dicek di ReviewController.
 Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])
-    ->middleware(['auth', 'role:buyer'])
+    ->middleware($buyerAccess)
     ->name('products.reviews.store');
 
 // ---------------------------------------------------------------------
-// 4. PENJUAL (role: seller)
+// 5. PENJUAL (role: seller)
 // ---------------------------------------------------------------------
-Route::middleware(['auth', 'role:seller'])
+Route::middleware($sellerAccess)
     ->prefix('seller')
     ->name('seller.')
     ->group(function () {
@@ -106,16 +119,18 @@ Route::middleware(['auth', 'role:seller'])
     });
 
 // ---------------------------------------------------------------------
-// 5. ADMIN (role: admin)
+// 6. ADMIN (role: admin)
 // ---------------------------------------------------------------------
-Route::middleware(['auth', 'role:admin'])
+Route::middleware($adminAccess)
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
         // Dashboard admin: /admin
         Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
-        // CRUD produk dan kategori (tanpa halaman show; detail produk ada di sisi publik)
+        // CRUD produk dan kategori (tanpa halaman show; detail produk ada di sisi publik).
+        // Masing-masing menghasilkan: index, create, store, edit, update, destroy.
+        // Controllernya harus punya keenam method itu.
         Route::resource('products', Admin\ProductController::class)->except('show');
         Route::resource('categories', Admin\CategoryController::class)->except('show');
 
@@ -126,4 +141,15 @@ Route::middleware(['auth', 'role:admin'])
             ->name('submissions.approve');
         Route::patch('/submissions/{submission}/reject', [Admin\ProductSubmissionController::class, 'reject'])
             ->name('submissions.reject');
+
+        // Moderasi ulasan: daftar dan hapus.
+        // Memakai AdminReviewController (file terbaru). Admin\ReviewController
+        // lama juga masih ada dan kosong; tim perlu memilih salah satu.
+        Route::get('/reviews', [Admin\AdminReviewController::class, 'index'])->name('reviews.index');
+        Route::delete('/reviews/{review}', [Admin\AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+
+        // Konten website (slide beranda, edukasi, testimoni) -> SiteContentController.
+        // Admin\ContentController lama kosong dan tidak dipakai.
+        // View yang baru ada: admin/contents/index. create dan edit belum ada.
+        Route::resource('contents', Admin\SiteContentController::class)->except('show');
     });
