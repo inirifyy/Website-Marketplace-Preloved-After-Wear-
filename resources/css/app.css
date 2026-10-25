@@ -9,3 +9,142 @@
 } */
 
 /* styling utama, navbar, banner, katalog, detail produk, form, login, dashboard, dan responsive layout */
+/* ===== After Wear: gaya tampilan ===== */
+:root {
+  --aw-bg: var(--aw-cream);
+  --aw-surface: var(--aw-white);
+  --aw-ink: var(--aw-charcoal);
+  --aw-muted: #6f736d;
+  --aw-primary: #5f7a5a;
+  --aw-primary-dark: #4a6146;
+  --aw-accent: #d9a05b;
+  --aw-line: #ddd6c8;
+  --aw-wa: #25d366;
+  --aw-radius: 14px;
+}
+
+.aw-section { padding: 2rem 0; }
+.aw-section__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; }
+.aw-section__title { font-size: 1.35rem; font-weight: 700; color: var(--aw-ink); }
+.aw-link { color: var(--aw-primary); font-weight: 600; text-decoration: none; }
+.aw-link:hover { text-decoration: underline; }
+
+/* Tombol */
+.aw-btn { display: inline-flex; align-items: center; gap: .5rem; padding: .65rem 1.2rem; border-radius: 999px;
+  background: var(--aw-primary); color: #fff; font-weight: 600; text-decoration: none; border: 0; cursor: pointer; }
+.aw-btn:hover { background: var(--aw-primary-dark); }
+.aw-btn--wa { background: var(--aw-wa); color: #083b1c; }
+.aw-btn--wa:hover { background: #1fbd59; }
+.aw-btn--ghost { background: transparent; color: var(--aw-primary); border: 1.5px solid var(--aw-primary); }
+
+/* Banner bergantian */
+.aw-hero { position: relative; border-radius: var(--aw-radius); overflow: hidden; min-height: 340px;
+  background: linear-gradient(135deg, var(--aw-primary), var(--aw-primary-dark)); }
+.aw-hero__slide { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 2rem;
+  background-size: cover; background-position: center; opacity: 0; transition: opacity .6s ease; }
+.aw-hero__slide.is-active { opacity: 1; }
+.aw-hero__slide::before { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,.05) 60%); }
+.aw-hero__text { position: relative; color: #fff; max-width: 34rem; }
+.aw-hero__text h2 { font-size: 1.8rem; font-weight: 800; line-height: 1.2; margin-bottom: .5rem; }
+.aw-hero__text p { margin-bottom: 1rem; opacity: .92; }
+.aw-hero__dots { position: absolute; right: 1.25rem; bottom: 1rem; display: flex; gap: .4rem; z-index: 2; }
+.aw-hero__dots button { width: 9px; height: 9px; border-radius: 50%; border: 0; background: rgba(255,255,255,.5); cursor: pointer; }
+.aw-hero__dots button.is-active { background: #fff; width: 22px; border-radius: 999px; }
+
+/* Kategori */
+.aw-cats { display: flex; gap: .6rem; overflow-x: auto; padding-bottom: .25rem; }
+.aw-cat { flex: none; padding: .5rem 1.1rem; border-radius: 999px; background: var(--aw-surface);
+  border: 1px solid var(--aw-line); color: var(--aw-ink); text-decoration: none; font-weight: 500; }
+.aw-cat:hover, .aw-cat.is-active { background: var(--aw-primary); color: #fff; border-color: var(--aw-primary); }
+.aw-cats { scrollbar-width: thin; scrollbar-color: var(--aw-line) transparent; }
+
+/* Kartu produk */
+.aw-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+@media (min-width: 768px)  { .aw-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1024px) { .aw-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.aw-card { display: block; background: var(--aw-surface); border: 1px solid var(--aw-line);
+  border-radius: var(--aw-radius); overflow: hidden; text-decoration: none; color: inherit;
+  transition: transform .15s ease, box-shadow .15s ease; }
+.aw-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.08); }
+.aw-card__img { position: relative; aspect-ratio: 1 / 1; background: var(--aw-line); }
+.aw-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.aw-card__badge { position: absolute; top: .6rem; left: .6rem; padding: .2rem .6rem; border-radius: 999px;
+  background: var(--aw-accent); color: #3b2a0d; font-size: .75rem; font-weight: 700; }
+.aw-card__badge--sold { background: #5b5551; color: #fff; }
+.aw-card__body { padding: .8rem .9rem 1rem; }
+.aw-card__cat { font-size: .75rem; color: var(--aw-muted); text-transform: uppercase; letter-spacing: .04em; }
+.aw-card__name { font-weight: 600; margin: .2rem 0 .35rem; display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden; }
+.aw-card__price { font-weight: 800; color: var(--aw-primary); }
+
+.aw-empty { padding: 2rem; text-align: center; color: var(--aw-muted); background: var(--aw-surface);
+  border: 1px dashed var(--aw-line); border-radius: var(--aw-radius); }
+
+@media (max-width: 640px) {
+  .aw-hero { min-height: 240px; }
+  .aw-hero__text h2 { font-size: 1.3rem; }
+}
+
+/* Katalog */
+.aw-filter { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1rem; }
+.aw-input { flex: 1 1 220px; padding: .65rem 1rem; border: 1px solid var(--aw-line); border-radius: 999px;
+  background: var(--aw-surface); color: var(--aw-ink); font: inherit; }
+.aw-input:focus { outline: 2px solid var(--aw-primary); outline-offset: 1px; }
+.aw-result-info { color: var(--aw-muted); margin: .75rem 0 1rem; font-size: .9rem; }
+
+.aw-pager { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+.aw-pager__item { padding: .5rem 1rem; border-radius: 999px; border: 1px solid var(--aw-primary);
+  color: var(--aw-primary); text-decoration: none; font-weight: 600; }
+.aw-pager__item:hover { background: var(--aw-primary); color: #fff; }
+.aw-pager__item.is-disabled { opacity: .4; pointer-events: none; }
+.aw-pager__info { color: var(--aw-muted); font-size: .9rem; }
+
+/* Detail produk */
+.aw-crumb { font-size: .85rem; color: var(--aw-muted); margin-bottom: 1rem; }
+.aw-crumb a { color: var(--aw-primary); text-decoration: none; }
+.aw-detail { display: grid; gap: 1.5rem; }
+@media (min-width: 900px) { .aw-detail { grid-template-columns: 1.1fr 1fr; gap: 2.5rem; align-items: start; } }
+
+.aw-gallery__main { aspect-ratio: 1 / 1; background: var(--aw-line); border-radius: var(--aw-radius);
+  overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.aw-gallery__main img, .aw-gallery__main video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.aw-gallery__thumbs { display: flex; gap: .5rem; margin-top: .75rem; overflow-x: auto; }
+.aw-thumb { flex: none; width: 68px; height: 68px; border-radius: 10px; overflow: hidden; padding: 0;
+  border: 2px solid transparent; background: var(--aw-line); cursor: pointer; }
+.aw-thumb.is-active { border-color: var(--aw-primary); }
+.aw-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.aw-thumb__video { display: grid; place-items: center; width: 100%; height: 100%; font-size: 1.3rem; }
+
+.aw-detail__cat { font-size: .8rem; color: var(--aw-muted); text-transform: uppercase; letter-spacing: .04em; }
+.aw-detail__name { font-size: 1.7rem; font-weight: 800; line-height: 1.25; margin: .25rem 0 .5rem; }
+.aw-detail__price { font-size: 1.6rem; font-weight: 800; color: var(--aw-primary); margin-bottom: .75rem; }
+.aw-rating { color: var(--aw-accent); letter-spacing: .05em; }
+.aw-rating small { color: var(--aw-muted); letter-spacing: 0; margin-left: .35rem; }
+.aw-specs { display: grid; grid-template-columns: 9rem 1fr; gap: .45rem 1rem; margin: 1.25rem 0;
+  padding: 1rem; background: var(--aw-surface); border: 1px solid var(--aw-line); border-radius: var(--aw-radius); }
+.aw-specs dt { color: var(--aw-muted); }
+.aw-specs dd { margin: 0; font-weight: 500; }
+.aw-desc { margin: 1rem 0 1.5rem; white-space: pre-line; }
+.aw-sold { display: inline-block; padding: .65rem 1.2rem; border-radius: 999px; background: #5b5551; color: #fff; font-weight: 600; }
+.aw-seller { margin-top: .75rem; font-size: .9rem; color: var(--aw-muted); }
+
+/* Ulasan */
+.aw-reviews { margin-top: 2.5rem; }
+.aw-review { padding: 1rem 0; border-bottom: 1px solid var(--aw-line); }
+.aw-review__head { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.aw-review__who { font-weight: 600; }
+.aw-review__date { color: var(--aw-muted); font-size: .85rem; }
+.aw-review__text { margin-top: .35rem; }
+.aw-review-form { margin-top: 1.5rem; padding: 1.25rem; background: var(--aw-surface);
+  border: 1px solid var(--aw-line); border-radius: var(--aw-radius); }
+.aw-review-form h3 { margin: 0 0 .75rem; font-weight: 700; }
+.aw-textarea { width: 100%; min-height: 90px; padding: .75rem 1rem; border: 1px solid var(--aw-line);
+  border-radius: 12px; font: inherit; background: #fff; color: var(--aw-ink); margin: .75rem 0; }
+.aw-rate { position: relative; display: inline-flex; flex-direction: row-reverse; gap: .15rem; }
+.aw-rate input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.aw-rate label { font-size: 1.9rem; line-height: 1; color: var(--aw-line); cursor: pointer; }
+.aw-rate input:checked ~ label,
+.aw-rate label:hover,
+.aw-rate label:hover ~ label { color: var(--aw-accent); }

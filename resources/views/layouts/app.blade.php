@@ -8,8 +8,7 @@
     <meta name="description" content="@yield('meta_description', 'After Wear: marketplace barang preloved layak pakai untuk membantu mengurangi limbah tekstil.')">
 
     {{-- Judul dinamis: tiap halaman mengisi @section('title', '...') --}}
-    <title>@hasSection('title')@yield('title') | After Wear@else After Wear | Marketplace Preloved@endif</title>
-
+   <title>@hasSection('title') @yield('title') | After Wear @else After Wear | Marketplace Preloved @endif</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}">
 
     {{-- Font dari konfigurasi vite.config.js (kosong jika belum di-build) --}}
