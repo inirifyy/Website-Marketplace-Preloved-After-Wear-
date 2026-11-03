@@ -4,76 +4,122 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\View\View;
+use Illuminate\Validation\Rule;
 
-/** CRUD kategori (tanpa show). */
 class CategoryController extends Controller
 {
-    public function index(): View
+    /**
+     * Tampilkan daftar kategori untuk admin.
+     */
+    public function index(Request $request)
     {
-        $categories = Category::withCount('products')->orderBy('name')->get();
+        $search = $request->query('search');
 
-        return view('admin.categories.index', compact('categories'));
+        $categories = Category::withCount('products')
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            })
+            ->orderBy('order', 'asc')
+            ->orderBy('name', 'asc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.categories.index', compact('categories', 'search'));
     }
 
-    public function create(): View
+    /**
+     * Tampilkan formulir tambah kategori baru.
+     */
+    public function create()
     {
         return view('admin.categories.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    /**
+     * Simpan kategori baru ke database.
+     */
+    public function store(Request $request)
     {
-        $data = $request->validate([
-            'name'        => ['required', 'string', 'max:100', 'unique:categories,name'],
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:categories,slug'],
             'description' => ['nullable', 'string'],
+            'icon' => ['nullable', 'string', 'max:100'],
+            'image' => ['nullable', 'string', 'max:500'],
+            'order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $slug = Str::slug($data['name']);
-
-        if (Category::where('slug', $slug)->exists()) {
-            return back()->withInput()->withErrors(['name' => 'Nama ini menghasilkan slug yang sudah dipakai kategori lain.']);
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['name']);
+        } else {
+            $validated['slug'] = Str::slug($validated['slug']);
         }
 
-        Category::create($data + ['slug' => $slug]);
+        $validated['is_active'] = $request->has('is_active');
+        $validated['order'] = $validated['order'] ?? 0;
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori ditambahkan.');
+        Category::create($validated);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', "Kategori '{$validated['name']}' berhasil ditambahkan.");
     }
 
-    public function edit(Category $category): View
+    /**
+     * Tampilkan formulir ubah kategori.
+     */
+    public function edit(Category $category)
     {
         return view('admin.categories.edit', compact('category'));
     }
 
-    public function update(Request $request, Category $category): RedirectResponse
+    /**
+     * Simpan perubahan kategori ke database.
+     */
+    public function update(Request $request, Category $category)
     {
-        $data = $request->validate([
-            'name'        => ['required', 'string', 'max:100', 'unique:categories,name,' . $category->id],
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('categories', 'slug')->ignore($category->id),
+            ],
             'description' => ['nullable', 'string'],
+            'icon' => ['nullable', 'string', 'max:100'],
+            'image' => ['nullable', 'string', 'max:500'],
+            'order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $slug = Str::slug($data['name']);
-
-        $slugTaken = Category::where('slug', $slug)->where('id', '!=', $category->id)->exists();
-        if ($slugTaken) {
-            return back()->withInput()->withErrors(['name' => 'Nama ini menghasilkan slug yang sudah dipakai kategori lain.']);
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['name']);
+        } else {
+            $validated['slug'] = Str::slug($validated['slug']);
         }
 
-        $category->update($data + ['slug' => $slug]);
+        $validated['is_active'] = $request->has('is_active');
+        $validated['order'] = $validated['order'] ?? 0;
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori diperbarui.');
+        $category->update($validated);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', "Kategori '{$category->name}' berhasil diperbarui.");
     }
 
-    public function destroy(Category $category): RedirectResponse
+    /**
+     * Hapus kategori dari database.
+     */
+    public function destroy(Category $category)
     {
-        if ($category->products()->exists() || $category->submissions()->exists()) {
-            return back()->with('error', 'Kategori masih dipakai produk/pengajuan, tidak bisa dihapus.');
-        }
-
+        $name = $category->name;
         $category->delete();
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori dihapus.');
+        return redirect()->route('admin.categories.index')
+            ->with('success', "Kategori '{$name}' telah dihapus.");
     }
 }
