@@ -3,25 +3,42 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Seed Categories
+        $this->call(CategorySeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // 2. Seed Site Contents (Banners & Education)
+        $this->call(SiteContentSeeder::class);
+
+        // 3. Seed Default Administrator
+        User::updateOrCreate(
+            ['email' => 'admin@afterwear.test'],
+            [
+                'name' => 'Admin After Wear',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'phone' => '081234567890',
+            ]
+        );
+
+        // 4. Seed Regular Member/User
+        User::updateOrCreate(
+            ['email' => 'user@afterwear.test'],
+            [
+                'name' => 'Pengguna After Wear',
+                'password' => Hash::make('password'),
+                'role' => 'buyer',
+                'phone' => '089876543210',
+            ]
+        );
     }
 }
-
-Memanggil seeder kategori dan data awal lain yang diperlukan.
