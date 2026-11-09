@@ -1,3 +1,7 @@
+-- CATATAN: FILE INI SUDAH DIGANTIKAN oleh database/after_wear.sql dan migration Laravel.
+-- Struktur tabel categories dan site_contents di bawah TIDAK sesuai lagi dengan kode
+-- (model, seeder, controller). Jangan dipakai; gunakan after_wear.sql atau php artisan migrate.
+
 -- AFTER WEAR: skema database MySQL/MariaDB
 -- PENTING:
 -- 1) Skrip ini ditujukan untuk DATABASE KOSONG / DATABASE BARU.
