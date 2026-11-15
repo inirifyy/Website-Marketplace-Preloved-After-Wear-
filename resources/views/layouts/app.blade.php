@@ -15,36 +15,115 @@
     @fonts
 
     {{--
+        Font identitas After Wear (sesuai desain Figma):
+        - Serif editorial untuk heading : Cormorant Garamond
+        - Sans-serif untuk antarmuka    : Inter
+        Dimuat langsung di sini karena vite.config.js bukan bagian dari file ini.
+        Jika font gagal dimuat, fallback Georgia / system-ui tetap dipakai.
+    --}}
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=cormorant-garamond:400,500,600,500i|inter:400,500,600&display=swap">
+
+    {{--
         Gaya dasar tata letak + palet warna proyek.
         Diletakkan SEBELUM @vite supaya resources/css/app.css tetap menang.
-        Variabel warna bisa dipakai di app.css, contoh: color: var(--aw-charcoal);
+        Nama variabel lama (--aw-cream, --aw-sage, --aw-charcoal, --aw-white) DIPERTAHANKAN
+        agar halaman anggota lain tidak rusak; hanya nilainya yang disesuaikan ke desain Figma.
+        Aturan umum memakai :where() (specificity 0) supaya gaya komponen mana pun tetap menang.
     --}}
     <style>
         :root {
-            --aw-cream: #F3EFE6;
-            --aw-sage: #7D9278;
-            --aw-charcoal: #30332F;
-            --aw-white: #FFFFFF;
+            /* Palet utama (monokrom) */
+            --aw-white: #FFFFFF;          /* background utama */
+            --aw-cream: #F7F7F6;          /* off-white: section / area pembeda */
+            --aw-charcoal: #111111;       /* teks utama, tombol utama, sidebar admin */
+            --aw-sage: #7FA487;           /* soft green: HANYA sukses / verifikasi / sustainability */
+
+            /* Token tambahan */
+            --aw-gray-50: #F7F7F6;
+            --aw-gray-100: #F1F1F0;       /* input, card tertentu */
+            --aw-gray-200: #E7E7E5;       /* border tipis */
+            --aw-gray-500: #6B6B6B;       /* teks sekunder */
+            --aw-success-bg: #EEF5F0;
+            --aw-success-ink: #2F6B45;
+
+            --aw-font-sans: 'Inter', 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+            --aw-font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, 'Times New Roman', serif;
+
+            --aw-r-sm: 6px;
+            --aw-r-md: 10px;
+            --aw-shadow-soft: 0 1px 2px rgba(17, 17, 17, .04), 0 4px 16px rgba(17, 17, 17, .04);
         }
         *, *::before, *::after { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
         :where(body.aw-body) {
             margin: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            font-family: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-            line-height: 1.5;
+            font-family: var(--aw-font-sans);
+            font-size: 15px;
+            line-height: 1.6;
             color: var(--aw-charcoal);
-            background: var(--aw-cream);
+            background: var(--aw-white);
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
         .aw-main { flex: 1 0 auto; width: 100%; }
         .aw-container { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: 1rem; }
-        @media (min-width: 768px) { .aw-container { padding-inline: 1.5rem; } }
+        @media (min-width: 768px) { .aw-container { padding-inline: 2rem; } }
         img, video { max-width: 100%; }
-        .aw-alert { margin-block: 1rem; padding: .75rem 1rem; border-radius: .5rem; border: 1px solid transparent; background: var(--aw-white); }
+
+        /* Tipografi dasar: heading memakai serif editorial (h1 & h2 saja, specificity 0) */
+        :where(h1, h2) { font-family: var(--aw-font-serif); font-weight: 500; letter-spacing: -.01em; line-height: 1.15; }
+        :where(h3, h4) { font-weight: 600; line-height: 1.3; }
+        :where(a) { color: inherit; }
+        :where(::selection) { background: var(--aw-charcoal); color: var(--aw-white); }
+
+        /* Form dasar: input abu-abu muda, border tipis (specificity 0) */
+        :where(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=submit]):not([type=button]):not([type=hidden]), select, textarea) {
+            font-family: inherit; font-size: .9rem; color: var(--aw-charcoal);
+            background: var(--aw-gray-100); border: 1px solid var(--aw-gray-200); border-radius: var(--aw-r-sm);
+            padding: .6rem .8rem;
+        }
+        :where(input, select, textarea)::placeholder { color: #9A9A98; }
+        :where(input, select, textarea):focus-visible { outline: 2px solid var(--aw-charcoal); outline-offset: 1px; }
+        :where(a, button):focus-visible { outline: 2px solid var(--aw-charcoal); outline-offset: 2px; }
+
+        /* Pesan sukses / gagal: soft green hanya untuk sukses */
+        .aw-alert { margin-block: 1rem; padding: .75rem 1rem; border-radius: var(--aw-r-sm); border: 1px solid var(--aw-gray-200); background: var(--aw-white); font-size: .9rem; }
         .aw-alert ul { margin: .25rem 0 0; padding-left: 1.25rem; }
-        .aw-alert-success { background: #eef3ec; border-color: var(--aw-sage); color: var(--aw-charcoal); }
-        .aw-alert-error { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+        .aw-alert-success { background: var(--aw-success-bg); border-color: #CFE3D5; color: var(--aw-success-ink); }
+        .aw-alert-error { background: #FEF2F2; border-color: #FECACA; color: #991B1B; }
+
+        /*
+         * Navbar publik (markup ada di partials/navbar.blade.php, milik anggota lain, TIDAK diubah).
+         * Di sini hanya penyesuaian visual lewat selector ber-prefix .aw-body supaya menang atas
+         * <style> milik partial tanpa memakai !important pada elemen lain.
+         */
+        .aw-body .aw-nav { background: var(--aw-white); border-bottom: 1px solid var(--aw-gray-200); font-family: var(--aw-font-sans); }
+        .aw-body .aw-nav__inner { height: 3.5rem; gap: 1.5rem; }
+        .aw-body .aw-nav__brand { font-family: var(--aw-font-serif); font-size: 1.35rem; font-weight: 600; letter-spacing: -.01em; color: var(--aw-charcoal); }
+        .aw-body .aw-nav__brand span { color: inherit; }
+        .aw-body .aw-nav__brand > span[style] { background: var(--aw-charcoal) !important; border-radius: var(--aw-r-sm) !important; width: 1.5rem !important; height: 1.5rem !important; line-height: 1.5rem !important; font-size: .8rem !important; }
+        .aw-body .aw-nav__menu { gap: 1.5rem; font-size: .8125rem; font-weight: 500; }
+        .aw-body .aw-nav__menu a { color: var(--aw-gray-500); }
+        .aw-body .aw-nav__menu a:hover { color: var(--aw-charcoal); }
+        .aw-body .aw-nav__actions { gap: .5rem; font-size: .8125rem; }
+        .aw-body .aw-nav .aw-btn { padding: .4rem .9rem; border-radius: var(--aw-r-sm); font-size: .8125rem; font-weight: 500; line-height: 1.4; }
+        .aw-body .aw-nav .aw-btn-primary,
+        .aw-body .aw-nav .aw-btn-seller { background: var(--aw-charcoal); color: var(--aw-white); border: 1px solid var(--aw-charcoal); }
+        .aw-body .aw-nav .aw-btn-primary:hover,
+        .aw-body .aw-nav .aw-btn-seller:hover { background: #2A2A2A; color: var(--aw-white); }
+        .aw-body .aw-nav .aw-btn-outline { background: var(--aw-white); color: var(--aw-charcoal); border: 1px solid var(--aw-gray-200); }
+        .aw-body .aw-nav .aw-btn-outline:hover { background: var(--aw-gray-50); border-color: #CFCFCD; }
+        /* Tombol admin di navbar memakai warna amber inline; diseragamkan ke monokrom */
+        .aw-body .aw-nav .aw-btn-outline[style*="F59E0B"] { border-color: var(--aw-gray-200) !important; color: var(--aw-charcoal) !important; }
+        @media (max-width: 767px) {
+            .aw-body .aw-nav__inner { height: auto; min-height: 3.5rem; flex-wrap: wrap; padding-block: .5rem; gap: .5rem 1rem; }
+            .aw-body .aw-nav__actions { flex-wrap: wrap; }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) { .aw-body .aw-nav__menu { gap: 1rem; } }
     </style>
 
     {{--
