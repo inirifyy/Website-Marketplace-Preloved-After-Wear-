@@ -7,9 +7,13 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+/**
+ * Katalog publik (tanpa login): daftar produk + detail produk.
+ * Hanya produk dengan approval_status = approved yang boleh tampil.
+ */
 class ProductController extends Controller
 {
-    /** Katalog publik: /products?q=kemeja&category=atasan */
+    /** Katalog: /products?q=kemeja&category=atasan */
     public function index(Request $request): View
     {
         $products = Product::with(['category', 'media'])
@@ -26,7 +30,7 @@ class ProductController extends Controller
         return view('products.index', compact('products', 'categories'));
     }
 
-    /** Detail produk: hanya yang sudah disetujui admin, selain itu 404. */
+    /** Detail produk. Produk yang belum disetujui admin dianggap tidak ada (404). */
     public function show(Product $product): View
     {
         abort_unless($product->approval_status === 'approved', 404);
