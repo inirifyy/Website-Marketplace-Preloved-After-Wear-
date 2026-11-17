@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Review;
 use App\Models\SiteContent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -48,7 +49,7 @@ class HomeController extends Controller
     {
         $educationContents = SiteContent::getSection('education');
         $stats = SiteContent::getSection('stat');
-        return view('pages.testimonials', compact('educationContents', 'stats'));
+        return view('pages.education', compact('educationContents', 'stats'));
     }
 
     /**
@@ -86,10 +87,16 @@ class HomeController extends Controller
             ],
         ];
 
+        // View pages/testimonials.blade.php membaca $reviews (ulasan nyata dari pembeli).
+        $reviews = Review::with(['reviewer', 'product'])
+            ->latest()
+            ->take(9)
+            ->get();
+
         $educationContents = SiteContent::getSection('education');
         $stats = SiteContent::getSection('stat');
 
-        return view('pages.testimonials', compact('testimonials', 'educationContents', 'stats'));
+        return view('pages.testimonials', compact('reviews', 'testimonials', 'educationContents', 'stats'));
     }
 
     /**
