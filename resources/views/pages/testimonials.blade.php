@@ -35,7 +35,7 @@
                     </div>
                     <div style="border-top: 1px solid rgba(48, 51, 47, .08); padding-top: .75rem; display: flex; align-items: center; justify-content: space-between;">
                         <span style="font-weight: 600; font-size: .92rem;">
-                            {{ $review->user->name ?? 'Pengguna After Wear' }}
+                            {{ $review->reviewer->name ?? 'Pengguna After Wear' }}
                         </span>
                         @if ($review->product)
                             <a href="{{ route('products.show', $review->product) }}" style="font-size: .8rem; color: #566B52; text-decoration: underline;">
