@@ -1,70 +1,57 @@
-seluruh katalog produk, pencarian, kategori, filter.
 @extends('layouts.app')
-
-@section('title', 'Katalog Produk')
-
+@section('title', 'Katalog Preloved — After Wear')
 @section('content')
-<div class="aw-container aw-section">
-    <div class="aw-section__head">
-        <h1 class="aw-section__title">Katalog produk</h1>
-    </div>
+@php $cats = ['Atasan','Bawahan','Dress','Sepatu','Tas','Aksesoris']; @endphp
+<div class="wrap" style="padding-top:24px">
+  <p class="small mute">Beranda / Katalog Preloved @if(request('q'))/ <b style="color:#000">Hasil Pencarian</b>@endif</p>
+  <h1 style="font-size:36px;margin-top:8px">
+    @if(request('q'))Hasil untuk “{{ request('q') }}” @else Katalog Preloved @endif
+    <span class="small mute" style="font-family:'Plus Jakarta Sans'">({{ $products->total() }} kurasi ditemukan)</span>
+  </h1>
 
-    {{-- Pencarian --}}
-    <form method="GET" action="{{ route('products.index') }}" class="aw-filter">
-        <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari barang..." class="aw-input">
-        @if (request('category'))
-            <input type="hidden" name="category" value="{{ request('category') }}">
-        @endif
-        <button type="submit" class="aw-btn">Cari</button>
-        @if (request()->filled('q') || request()->filled('category'))
-            <a href="{{ route('products.index') }}" class="aw-btn aw-btn--ghost">Reset</a>
-        @endif
+  @if(request()->hasAny(['category','condition','location']))
+  <div class="chips">
+    <span class="small mute">Filter Aktif:</span>
+    @foreach(['category'=>'Kategori','condition'=>'Kondisi','location'=>'Lokasi'] as $k => $label)
+      @if(request($k))<span class="chip">{{ $label }}: {{ request($k) }}</span>@endif
+    @endforeach
+    <a class="small" style="text-decoration:underline" href="{{ url('/products') }}">Hapus semua</a>
+  </div>
+  @endif
+
+  <div class="layout" style="margin-top:20px">
+    <form class="side" method="GET" action="{{ url('/products') }}">
+      <input type="hidden" name="q" value="{{ request('q') }}">
+      <h3 style="font-size:22px">Filter Kurasi</h3>
+      <h4>Kategori Pakaian</h4>
+      @foreach($cats as $c)
+        <label><span><input type="radio" name="category" value="{{ $c }}" @checked(request('category') === $c)> {{ $c }}</span><span class="mute">{{ $counts[$c] ?? 0 }}</span></label>
+      @endforeach
+      <h4>Lokasi Pelapak (UMKM)</h4>
+      <input type="text" name="location" value="{{ request('location') }}" placeholder="Makassar & Sekitarnya">
+      <h4>Rentang Harga (IDR)</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <input type="number" name="min" value="{{ request('min') }}" placeholder="50.000" min="0">
+        <input type="number" name="max" value="{{ request('max') }}" placeholder="250.000" min="0">
+      </div>
+      <h4>Kondisi Pakaian</h4>
+      <label><span><input type="radio" name="condition" value="like_new" @checked(request('condition') === 'like_new')> Seperti Baru</span></label>
+      <label><span><input type="radio" name="condition" value="good" @checked(request('condition') === 'good')> Baik</span></label>
+      <label><span><input type="radio" name="condition" value="vintage" @checked(request('condition') === 'vintage')> Layak Pakai</span></label>
+      <button class="btn dark block" style="margin-top:16px">Terapkan Filter</button>
+      <div class="card small" style="margin-top:16px"><b>Dampak Sirkularitas</b><p class="mute">Membeli kemeja preloved menghemat sekitar 2.700 liter air dan mencegah limbah tekstil.</p></div>
     </form>
 
-    {{-- Filter kategori --}}
-    <div class="aw-cats">
-        <a href="{{ route('products.index', array_filter(['q' => request('q')])) }}"
-           class="aw-cat {{ request('category') ? '' : 'is-active' }}">Semua</a>
-        @foreach (($categories ?? []) as $category)
-            <a href="{{ route('products.index', array_filter(['category' => $category->slug, 'q' => request('q')])) }}"
-               class="aw-cat {{ request('category') === $category->slug ? 'is-active' : '' }}">{{ $category->name }}</a>
-        @endforeach
+    <div>
+      <div class="grid g3">
+        @forelse($products as $product)
+          @include('partials.product-card', ['product' => $product])
+        @empty
+          <p class="mute">Tidak ada produk yang cocok. Coba ubah atau hapus filter.</p>
+        @endforelse
+      </div>
+      <div class="pager">{{ $products->withQueryString()->links() }}</div>
     </div>
-
-    @php $total = method_exists($products, 'total') ? $products->total() : count($products); @endphp
-    <p class="aw-result-info">
-        {{ $total }} produk ditemukan
-        @if (request('q')) untuk "<strong>{{ request('q') }}</strong>" @endif
-    </p>
-
-    @if ($total > 0)
-        <div class="aw-grid">
-            @foreach ($products as $product)
-                <x-product-card :product="$product" />
-            @endforeach
-        </div>
-    @else
-        <div class="aw-empty">Produk tidak ditemukan. Coba kata kunci atau kategori lain.</div>
-    @endif
-
-    {{-- Navigasi halaman --}}
-    @if (method_exists($products, 'hasPages') && $products->hasPages())
-        @php $pager = $products->withQueryString(); @endphp
-        <nav class="aw-pager" aria-label="Halaman katalog">
-            @if ($pager->onFirstPage())
-                <span class="aw-pager__item is-disabled">&laquo; Sebelumnya</span>
-            @else
-                <a class="aw-pager__item" href="{{ $pager->previousPageUrl() }}">&laquo; Sebelumnya</a>
-            @endif
-
-            <span class="aw-pager__info">Halaman {{ $pager->currentPage() }} dari {{ $pager->lastPage() }}</span>
-
-            @if ($pager->hasMorePages())
-                <a class="aw-pager__item" href="{{ $pager->nextPageUrl() }}">Berikutnya &raquo;</a>
-            @else
-                <span class="aw-pager__item is-disabled">Berikutnya &raquo;</span>
-            @endif
-        </nav>
-    @endif
+  </div>
 </div>
 @endsection

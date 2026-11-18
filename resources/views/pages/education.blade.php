@@ -1,75 +1,59 @@
 @extends('layouts.app')
-
-@section('title', 'Edukasi Limbah Tekstil & Circular Fashion')
-
+@section('title', 'Mengapa Membeli Pakaian Preloved — After Wear')
 @section('content')
-<div class="aw-container" style="padding-block: 2.5rem 4rem;">
-    {{-- Header Edukasi --}}
-    <header style="text-align: center; max-width: 750px; margin: 0 auto 3rem;">
-        <span style="display: inline-block; padding: .3rem .85rem; background: rgba(125, 146, 120, .2); color: #30332F; border-radius: 999px; font-size: .85rem; font-weight: 600; margin-bottom: .75rem;">
-            Circular Fashion & Edukasi Lingkungan
-        </span>
-        <h1 style="font-size: 2.25rem; margin: 0 0 .85rem; color: var(--aw-charcoal); line-height: 1.25;">
-            Mengapa Thrifting & Preloved Penting untuk Bumi Kita?
-        </h1>
-        <p style="color: rgba(48, 51, 47, .8); font-size: 1.05rem; line-height: 1.6;">
-            Industri fashion cepat (fast fashion) menjadi salah satu penghasil limbah dan emisi karbon terbesar di dunia. Dengan membeli dan memakai kembali pakaian preloved, kita memperpanjang siklus hidup busana dan mengurangi jejak karbon.
-        </p>
-    </header>
+<div class="wrap" style="padding-top:20px">
+  <a class="small mute" href="{{ url('/education') }}">← Kembali ke Edukasi</a>
+  <article class="art">
+    <h1>Mengapa Membeli Pakaian Preloved Adalah Langkah Nyata Menyelamatkan Bumi</h1>
+    <div class="meta"><span>Tim Riset After Wear</span><span>18 Oktober 2024</span><span>5 Menit Baca</span><span>Dampak: 2.700L Air Terhemat</span></div>
+    <div class="cover"><img src="{{ asset('images/education-cover.png') }}" alt="Kain vintage tertata rapi di meja kayu"></div>
 
-    {{-- Statistik Dampak Lingkungan --}}
-    @if (isset($stats) && $stats->count() > 0)
-        <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 3.5rem;">
-            @foreach ($stats as $stat)
-                <div style="background: var(--aw-white); border: 1px solid rgba(48, 51, 47, .12); border-left: 4px solid var(--aw-sage); border-radius: .5rem; padding: 1.25rem;">
-                    <span style="display: block; font-size: 1.85rem; font-weight: 700; color: #566B52;">{{ $stat->title }}</span>
-                    <span style="display: block; margin-top: .35rem; font-size: .9rem; color: rgba(48, 51, 47, .8); line-height: 1.4;">{{ $stat->content }}</span>
-                </div>
-            @endforeach
-        </section>
-    @endif
-
-    {{-- Kartu Materi Edukasi --}}
-    <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3.5rem;">
-        @if (isset($educationContents) && $educationContents->count() > 0)
-            @foreach ($educationContents as $edu)
-                <article style="background: var(--aw-white); border: 1px solid rgba(48, 51, 47, .12); border-radius: .75rem; overflow: hidden; display: flex; flex-direction: column;">
-                    @if ($edu->image_path)
-                        <img src="{{ $edu->image_path }}" alt="{{ $edu->title }}" style="width: 100%; height: 200px; object-fit: cover;" />
-                    @endif
-                    <div style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <h3 style="font-size: 1.25rem; margin: 0 0 .5rem; color: var(--aw-charcoal);">{{ $edu->title }}</h3>
-                            <p style="color: rgba(48, 51, 47, .75); font-size: .95rem; line-height: 1.55; margin: 0;">{{ $edu->content }}</p>
-                        </div>
-                    </div>
-                </article>
-            @endforeach
-        @else
-            <article style="background: var(--aw-white); border: 1px solid rgba(48, 51, 47, .12); border-radius: .75rem; padding: 1.5rem;">
-                <h3 style="font-size: 1.2rem; margin: 0 0 .5rem;">1. Mengurangi Sampah Tekstil</h3>
-                <p style="color: rgba(48, 51, 47, .75); line-height: 1.55; margin: 0;">Membeli satu potong pakaian bekas berarti menyelamatkan pakaian tersebut dari tempat pembuangan akhir (TPA) dan membakar sedikit emisi metana.</p>
-            </article>
-            <article style="background: var(--aw-white); border: 1px solid rgba(48, 51, 47, .12); border-radius: .75rem; padding: 1.5rem;">
-                <h3 style="font-size: 1.2rem; margin: 0 0 .5rem;">2. Menghemat Ribuan Liter Air</h3>
-                <p style="color: rgba(48, 51, 47, .75); line-height: 1.55; margin: 0;">Produksi sehelai kaos katun baru memerlukan rata-rata 2.700 liter air tawar. Dengan thrifting, kebutuhan air baru dapat ditekan secara nyata.</p>
-            </article>
-            <article style="background: var(--aw-white); border: 1px solid rgba(48, 51, 47, .12); border-radius: .75rem; padding: 1.5rem;">
-                <h3 style="font-size: 1.2rem; margin: 0 0 .5rem;">3. Menekan Polusi Mikroplastik</h3>
-                <p style="color: rgba(48, 51, 47, .75); line-height: 1.55; margin: 0;">Bahan sintetis seperti poliester dan nilon melepaskan serat mikroplastik ke lautan saat diproduksi massal. Circular fashion membantu memperlambat rantai ini.</p>
-            </article>
-        @endif
-    </section>
-
-    {{-- Penutup --}}
-    <div style="background: #30332F; color: #FFFFFF; border-radius: 1rem; padding: 2.5rem; text-align: center;">
-        <h2 style="font-size: 1.75rem; margin: 0 0 .75rem; color: #FFFFFF;">Mari Menjadi Bagian dari Solusi</h2>
-        <p style="max-width: 600px; margin: 0 auto 1.5rem; color: rgba(255, 255, 255, .8); line-height: 1.6;">
-            Setiap kali kamu memilih pakaian preloved di After Wear, kamu memberikan kontribusi nyata bagi kelestarian lingkungan dan gaya hidup berkelanjutan.
-        </p>
-        <a href="{{ route('products.index') }}" style="display: inline-block; padding: .75rem 1.75rem; background: #7D9278; color: #FFFFFF; border-radius: .5rem; font-weight: 600; text-decoration: none;">
-            Mulai Belanja Sadar Lingkungan
-        </a>
+    <div class="stats">
+      <div class="card"><span class="small mute">Konservasi Air</span><h3>2.700 Liter</h3><span class="small mute">Tiap 1 kaos preloved yang diadopsi</span></div>
+      <div class="card"><span class="small mute">Reduksi Emisi</span><h3>-82% Karbon</h3><span class="small mute">Dibanding produksi ritel cepat baru</span></div>
+      <div class="card"><span class="small mute">Dukungan Lokal</span><h3>100% UMKM</h3><span class="small mute">Memperkuat kurator thrift mandiri</span></div>
     </div>
+
+    <p>Di tengah gempuran tren mikro yang berganti setiap pekan, lemari pakaian modern kita tanpa disadari menjadi tempat singgah bagi garmen yang usianya kian pendek. Industri mode konvensional kini memproduksi lebih dari seratus miliar pakaian setiap tahun, dan sebagian besar berakhir di tempat pembuangan atau insinerator hanya beberapa bulan setelah dibeli.</p>
+    <p>Kenyataan ini mendorong pergeseran paradigma: fesyen sirkular bukan lagi sekadar gaya hidup pencinta barang antik, melainkan strategi terukur untuk menekan krisis iklim. Memilih pakaian preloved berkualitas berarti memperpanjang umur material yang sudah ada.</p>
+
+    <h2>Krisis Tersembunyi di Balik Lemari Pakaian Kita</h2>
+    <p>Menurut data konsorsium lingkungan global, sektor tekstil menyumbang sekitar 10 persen emisi gas rumah kaca dunia, melampaui gabungan penerbangan komersial dan pelayaran. Masalah ini diperparah serat sintetis berbahan poliester yang butuh ratusan tahun untuk terurai.</p>
+    <p>Di Indonesia, puluhan ton limbah tekstil pascakonsumen mencemari sungai dan pesisir setiap hari. Pakaian yang dibuang terlalu cepat melepaskan mikroplastik ke rantai makanan laut dan gas metana saat terkubur di tempat pemrosesan akhir terbuka.</p>
+
+    <h2>Menghitung Jejak Karbon dari Produksi Sehelai Katun</h2>
+    <p>Satu kaus katun biasa membutuhkan rata-rata 2.700 liter air bersih, setara kebutuhan minum seorang dewasa selama 900 hari. Saat kita membeli garmen preloved yang masih prima, kebutuhan air produksi baru itu hilang sepenuhnya: tidak ada pestisida baru, tidak ada pewarna sintetis yang dibuang ke saluran air, dan tidak ada bahan bakar fosil tambahan.</p>
+    <blockquote>“Membeli barang preloved bukan sekadar penghematan biaya, melainkan deklarasi kesadaran terhadap masa depan lingkungan kita.”<div class="small mute" style="font:12px 'Plus Jakarta Sans';margin-top:8px">Manifesto Fashion Berkelanjutan After Wear 2024</div></blockquote>
+
+    <h2>Solusi Sirkular UMKM Indonesia</h2>
+    <p>Ekosistem preloved di Indonesia adalah urat nadi ekonomi sirkular yang digerakkan ratusan ribu pedagang UMKM. Para kurator memilah dengan cermat, memperbaiki jahitan, membersihkan menyeluruh, hingga menata gayanya. Melalui After Wear, kondisi setiap produk dinilai dari ketahanan kain, keutuhan jahitan, dan keaslian merek, sehingga pembeli mendapat kepastian nilai.</p>
+
+    <div class="steps">
+      <h3 style="font-size:22px;margin-bottom:12px">Panduan Merawat Pakaian agar Bertahan Dekade Berikutnya</h3>
+      <ol>
+        <li><b>Cuci menggunakan air dingin.</b> Air panas merusak elastisitas serat dan melepas lebih banyak mikroplastik.</li>
+        <li><b>Hindari pengering berpanas tinggi.</b> Jemur di tempat teduh berangin agar benang katun dan wol tidak melemah.</li>
+        <li><b>Gunakan gantungan kayu atau busa tebal.</b> Gantungan kawat tipis meregangkan bahu kemeja dan jaket secara permanen.</li>
+        <li><b>Pelajari visible mending.</b> Robekan kecil atau kancing lepas bukan alasan membuang pakaian.</li>
+      </ol>
+    </div>
+    <p style="margin-top:24px">Menyelamatkan bumi tidak selalu butuh tindakan megah. Langkahnya bisa dimulai dari keputusan sederhana saat membuka ponsel: memilih pakaian yang sudah punya cerita, merawatnya dengan baik, dan membiarkannya terus berputar.</p>
+    <p class="small mute">#SlowFashion #FashionSirkular #UMKMThrift #JejakKarbon</p>
+
+    <div class="card" style="display:flex;gap:16px;align-items:center;margin-top:32px">
+      <div><b>Tim Kurasi &amp; Keberlanjutan After Wear</b><p class="small mute">Kami mengkaji siklus hidup tekstil lokal, mendukung pedagang thrift vintage di seluruh Indonesia, dan merumuskan standar kurasi yang transparan.</p></div>
+    </div>
+  </article>
+
+  <section class="sec"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2>Artikel Terkait</h2><a href="{{ url('/education') }}"><b>Lihat Semua Artikel Edukasi</b></a></div>
+    <div class="grid g3">
+      @foreach($related ?? [] as $a)
+        <a class="pcard" href="{{ url('/education/'.$a->slug) }}"><div class="bd"><span class="small mute">{{ $a->category }} • {{ $a->read_minutes }} Menit</span><h3 style="font-size:20px;margin:6px 0">{{ $a->title }}</h3><p class="small mute">{{ $a->excerpt }}</p><b class="small">Baca Selengkapnya</b></div></a>
+      @endforeach
+    </div>
+  </section>
+
+  <div class="cta"><div><h2 style="font-size:30px">Dukung gerakan slow fashion bersama kami.</h2><p>Temukan ribuan pilihan pakaian preloved yang lolos uji keaslian, sanitasi higienis, dan kurasi teliti.</p></div>
+    <div style="display:flex;gap:8px"><a class="btn" style="background:#fff;color:#000" href="{{ url('/products') }}">Jelajahi Katalog</a><a class="btn dark" href="{{ url('/seller/submissions/create') }}">Jual Pakaian Anda</a></div></div>
 </div>
 @endsection
