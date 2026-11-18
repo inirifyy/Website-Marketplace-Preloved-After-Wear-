@@ -11,11 +11,26 @@ use Illuminate\Validation\Rule;
 class CategoryController extends Controller
 {
     /**
+     * Properti judul modul (contoh penerapan Property dalam Class).
+     */
+    protected string $moduleTitle;
+
+    /**
+     * Konstruktor dieksekusi secara otomatis setiap kali Controller diinstansiasi.
+     */
+    public function __construct()
+    {
+        // Menginisialisasi nilai awal properti saat objek Controller dibuat
+        $this->moduleTitle = 'Manajemen Kategori After Wear';
+    }
+
+    /**
      * Tampilkan daftar kategori untuk admin.
      */
     public function index(Request $request)
     {
         $search = $request->query('search');
+        $moduleTitle = $this->moduleTitle;
 
         $categories = Category::withCount('products')
             ->when($search, function ($query, $search) {
@@ -27,7 +42,7 @@ class CategoryController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.categories.index', compact('categories', 'search'));
+        return view('admin.categories.index', compact('categories', 'search', 'moduleTitle'));
     }
 
     /**
