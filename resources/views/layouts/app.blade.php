@@ -130,6 +130,9 @@
         @media (min-width: 768px) and (max-width: 1023px) { .aw-body .aw-nav__menu { gap: 1rem; } }
     </style>
 
+    {{-- Gaya untuk navbar/beranda/katalog/detail produk (kelas .wrap, .btn, .hero, dst.) --}}
+    @include('partials.page-styles')
+
     {{--
         CSS dan JS dimuat lewat Vite sesuai vite.config.js.
         Dibungkus pengecekan seperti bawaan Laravel: halaman tetap tampil
@@ -148,22 +151,48 @@
     {{-- ================= NAVBAR (inline, dari layout kedua) ================= --}}
     {{-- Versi lama: @include('partials.navbar') -- dinonaktifkan agar navbar tidak tampil dobel --}}
     <header class="nav"><div class="wrap">
-      <a class="brand" href="{{ url('/') }}">After Wear</a>
-      <form class="search" action="{{ url('/products') }}" method="GET">
+      <a class="brand" href="{{ route('home') }}">After Wear</a>
+      <form class="search" action="{{ route('products.index') }}" method="GET">
         <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari pakaian preloved..." aria-label="Cari produk">
       </form>
       <ul>
-        <li><a href="{{ url('/') }}" class="{{ request()->is('/') ? 'on' : '' }}">Beranda</a></li>
-        <li><a href="{{ url('/education') }}" class="{{ request()->is('education*') ? 'on' : '' }}">Edukasi</a></li>
-        <li><a href="{{ url('/testimonials') }}">Testimoni</a></li>
-        <li><a href="{{ url('/seller/submissions/create') }}">Jual Barang</a></li>
+        <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Beranda</a></li>
+        <li><a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'on' : '' }}">Katalog</a></li>
+        <li><a href="{{ route('education') }}" class="{{ request()->routeIs('education') ? 'on' : '' }}">Edukasi</a></li>
+        <li><a href="{{ route('testimonials') }}" class="{{ request()->routeIs('testimonials') ? 'on' : '' }}">Testimoni</a></li>
+        @if (! auth()->check() || auth()->user()->isSeller())
+          <li><a href="{{ route('seller.submissions.create') }}">Jual Barang</a></li>
+        @endif
       </ul>
       <div class="acts">
         @guest
-          <a class="btn" href="{{ url('/login') }}">Masuk</a>
-          <a class="btn dark" href="{{ url('/register') }}">Daftar</a>
+          <a class="btn" href="{{ route('login') }}">Masuk</a>
+          <a class="btn dark" href="{{ route('register') }}">Daftar</a>
         @else
-          <a class="btn" href="{{ url('/profile') }}">{{ auth()->user()->name }}</a>
+          @php $navUser = auth()->user(); @endphp
+
+          @if ($navUser->isAdmin())
+            <a class="btn dark" href="{{ route('admin.dashboard') }}">Dashboard Admin</a>
+            <a class="btn" href="{{ route('admin.categories.index') }}">Kategori</a>
+          @elseif ($navUser->isSeller())
+            <a class="btn" href="{{ route('seller.dashboard') }}">Toko Saya</a>
+          @else
+            <form method="POST" action="{{ route('profile.become-seller') }}" style="display:inline;margin:0"
+                  onsubmit="return confirm('Ubah akun Anda menjadi akun penjual?');">
+              @csrf
+              <button type="submit" class="btn">Jadi Penjual</button>
+            </form>
+          @endif
+
+          @if (! $navUser->isAdmin() && ! $navUser->hasVerifiedPhone())
+            <a class="btn" href="{{ route('phone.verification.notice') }}" style="border-color:#F59E0B;color:#B45309">Verifikasi HP</a>
+          @endif
+
+          <a class="btn" href="{{ route('profile.show') }}">{{ \Illuminate\Support\Str::limit($navUser->name, 14) }}</a>
+          <form method="POST" action="{{ route('logout') }}" style="display:inline;margin:0">
+            @csrf
+            <button type="submit" class="btn">Keluar</button>
+          </form>
         @endguest
       </div>
     </div></header>
@@ -210,7 +239,16 @@
           <p class="mute" style="margin-top:8px">WhatsApp UMKM: +62 852-4128-6043<br>Instagram: @afterwear.id<br>Makassar, Indonesia</p>
         </div>
       </div>
-      <div class="wrap copy"><span>Hak cipta © 2026 After Wear.</span><span>Pemberdayaan UMKM Fesyen Indonesia</span></div>
+      <div class="wrap copy">
+        <span>Hak cipta © 2026 After Wear.</span>
+        <span>
+          Pemberdayaan UMKM Fesyen Indonesia
+          @guest
+            &nbsp;•&nbsp; <a href="{{ route('login', ['as' => 'seller']) }}">Masuk Penjual</a>
+            &nbsp;•&nbsp; <a href="{{ route('login', ['as' => 'admin']) }}">Masuk Admin</a>
+          @endguest
+        </span>
+      </div>
     </footer>
 
     {{-- Tempat JavaScript tambahan khusus halaman: @push('scripts') ... @endpush --}}

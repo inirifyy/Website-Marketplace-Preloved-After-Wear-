@@ -27,7 +27,8 @@ class HomeController extends Controller
         // 3. Ambil produk preloved terbaru & featured secara aman
         $featuredProducts = collect();
         if (Schema::hasTable('products')) {
-            $featuredProducts = Product::with(['category'])
+            $featuredProducts = Product::with(['category', 'media'])
+                ->approved()
                 ->latest()
                 ->take(8)
                 ->get();

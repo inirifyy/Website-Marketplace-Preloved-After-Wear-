@@ -13,8 +13,19 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'role'           => \App\Http\Middleware\RoleMiddleware::class,
+            'phone.verified' => \App\Http\Middleware\EnsurePhoneIsVerified::class,
         ]);
+
+        // Tamu yang membuka /admin atau /seller dibawa ke halaman login
+        // dengan tab peran yang sesuai sudah terpilih.
+        $middleware->redirectGuestsTo(fn (Request $request) => route('login', array_filter([
+            'as' => $request->is('admin', 'admin/*') ? 'admin'
+                : ($request->is('seller', 'seller/*') ? 'seller' : null),
+        ])));
+
+        // User yang sudah login dan membuka /login atau /register dibawa ke halamannya.
+        $middleware->redirectUsersTo(fn (Request $request) => $request->user()?->homeUrl() ?? url('/'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

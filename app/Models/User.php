@@ -19,7 +19,7 @@ use Illuminate\Notifications\Notifiable;
  * tinker, bukan lewat form publik.
  */
 #[Fillable(['name', 'email', 'password', 'phone', 'address'])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden(['password', 'remember_token', 'phone_otp_hash'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -38,6 +38,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
+            'phone_otp_expires_at' => 'datetime',
+            'phone_otp_sent_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -77,6 +80,23 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    // ---------- Verifikasi nomor HP (email tidak perlu diverifikasi) ----------
+
+    public function hasVerifiedPhone(): bool
+    {
+        return $this->phone_verified_at !== null;
+    }
+
+    /** Halaman utama sesuai peran: dipakai setelah login. */
+    public function homeUrl(): string
+    {
+        return match (true) {
+            $this->isAdmin()  => route('admin.dashboard'),
+            $this->isSeller() => route('seller.dashboard'),
+            default           => route('home'),
+        };
     }
 
     /** Nama peran dalam Bahasa Indonesia untuk ditampilkan di halaman. */

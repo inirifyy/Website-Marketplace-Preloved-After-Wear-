@@ -38,10 +38,10 @@
 
         <div class="aw-field">
             <label for="phone">Nomor telepon</label>
-            <input class="aw-input" id="phone" name="phone" type="tel" maxlength="30"
+            <input class="aw-input" id="phone" name="phone" type="tel" required maxlength="30"
                    autocomplete="tel" value="{{ old('phone', $user->phone) }}"
                    @error('phone') aria-invalid="true" @enderror>
-            <p class="aw-field__hint">Opsional. Contoh: 0812 3456 7890</p>
+            <p class="aw-field__hint">Contoh: 0812 3456 7890. Jika nomor diganti, Anda perlu verifikasi ulang lewat kode OTP.</p>
             @error('phone') <p class="aw-field__error">{{ $message }}</p> @enderror
         </div>
 

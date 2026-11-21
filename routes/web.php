@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
@@ -29,20 +30,18 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Middleware akses
 |--------------------------------------------------------------------------
-| 'auth' dan 'guest' bawaan Laravel, pasti tersedia.
+| 'role' (RoleMiddleware) dan 'phone.verified' (EnsurePhoneIsVerified) sudah
+| terdaftar di bootstrap/app.php.
 |
-| Middleware 'role' BELUM siap: app/Http/Middleware/RoleMiddleware.php masih
-| kosong dan aliasnya belum didaftarkan di bootstrap/app.php. Jika dipakai
-| sekarang, semua rute di bawahnya error "Target class [role] does not exist".
-| Karena itu sementara hanya 'auth'. Setelah RoleMiddleware selesai dan alias
-| 'role' terdaftar, ubah tiga baris ini sesuai komentar di sebelahnya.
+|  - buyer  : harus login, berperan buyer, nomor HP terverifikasi
+|  - seller : harus login, berperan seller, nomor HP terverifikasi
+|  - admin  : harus login dan berperan admin (admin tidak perlu verifikasi HP)
 |
-| PERINGATAN: selama masih ['auth'], semua akun yang login (termasuk pembeli)
-| bisa membuka halaman penjual dan admin. Pasang role sebelum data asli dipakai.
+| Email TIDAK perlu diverifikasi; yang diverifikasi adalah nomor HP (OTP).
 */
-$buyerAccess = ['auth'];   // nanti: ['auth', 'role:buyer']
-$sellerAccess = ['auth'];  // nanti: ['auth', 'role:seller']
-$adminAccess = ['auth'];   // nanti: ['auth', 'role:admin']
+$buyerAccess = ['auth', 'role:buyer', 'phone.verified'];
+$sellerAccess = ['auth', 'role:seller', 'phone.verified'];
+$adminAccess = ['auth', 'role:admin'];
 
 // ---------------------------------------------------------------------
 // 1. HALAMAN PUBLIK (tanpa login)
@@ -74,18 +73,35 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 });
 
+// Pintasan: /admin/login membuka halaman login dengan tab "Admin" terpilih.
+Route::get('/admin/login', fn () => redirect()->route('login', ['as' => 'admin']))
+    ->middleware('guest')
+    ->name('admin.login');
+
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+// Verifikasi nomor HP (OTP). Hanya perlu login, belum perlu verified.
+Route::middleware('auth')->prefix('phone')->name('phone.verification.')->group(function () {
+    Route::get('/verify', [PhoneVerificationController::class, 'notice'])->name('notice');
+    Route::post('/verify', [PhoneVerificationController::class, 'verify'])
+        ->middleware('throttle:10,1')
+        ->name('verify');
+    Route::post('/resend', [PhoneVerificationController::class, 'resend'])
+        ->middleware('throttle:3,1')
+        ->name('resend');
+});
+
 // ---------------------------------------------------------------------
 // 3. PROFIL PENGGUNA (semua role yang sudah login)
 // ---------------------------------------------------------------------
-// View profile/show dan profile/edit sudah ada. ProfileController masih kosong.
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Pembeli yang ingin berjualan
+    Route::post('/profile/become-seller', [ProfileController::class, 'becomeSeller'])->name('profile.become-seller');
 });
 
 // ---------------------------------------------------------------------
@@ -150,6 +166,6 @@ Route::middleware($adminAccess)
 
         // Konten website (slide beranda, edukasi, testimoni) -> SiteContentController.
         // Admin\ContentController lama kosong dan tidak dipakai.
-        // View yang baru ada: admin/contents/index. create dan edit belum ada.
+        // View: admin/contents (index, create, edit, _form) sudah ada.
         Route::resource('contents', Admin\SiteContentController::class)->except('show');
     });
