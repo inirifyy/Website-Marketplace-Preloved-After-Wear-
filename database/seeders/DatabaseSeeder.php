@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,26 +18,25 @@ class DatabaseSeeder extends Seeder
         // 2. Seed Site Contents (Banners & Education)
         $this->call(SiteContentSeeder::class);
 
-        // 3. Seed Default Administrator
-        User::updateOrCreate(
-            ['email' => 'admin@afterwear.test'],
-            [
-                'name' => 'Admin After Wear',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'phone' => '081234567890',
-            ]
-        );
+        // 3. Akun demo. Aman dijalankan berulang (db:seed) -- akun yang sudah ada diperbarui.
+        //
+        // PENTING: 'role' sengaja TIDAK ada di $fillable model User (agar tidak bisa
+        // diubah lewat form). Karena itu User::updateOrCreate([... 'role' => 'admin'])
+        // DIAM-DIAM membuang role dan akun admin berakhir sebagai 'buyer'.
+        // forceFill() dipakai agar role benar-benar tersimpan.
+        $accounts = [
+            ['email' => 'admin@afterwear.test',  'name' => 'Admin After Wear',      'role' => User::ROLE_ADMIN,  'phone' => '6281234567890'],
+            ['email' => 'seller@afterwear.test', 'name' => 'Penjual After Wear',    'role' => User::ROLE_SELLER, 'phone' => '6281234567891'],
+            ['email' => 'user@afterwear.test',   'name' => 'Pengguna After Wear',   'role' => User::ROLE_BUYER,  'phone' => '6289876543210'],
+        ];
 
-        // 4. Seed Regular Member/User
-        User::updateOrCreate(
-            ['email' => 'user@afterwear.test'],
-            [
-                'name' => 'Pengguna After Wear',
-                'password' => Hash::make('password'),
-                'role' => 'buyer',
-                'phone' => '089876543210',
-            ]
-        );
+        foreach ($accounts as $account) {
+            $user = User::firstOrNew(['email' => $account['email']]);
+
+            $user->forceFill($account + [
+                'password'          => 'password',  // di-hash otomatis oleh cast 'hashed'
+                'phone_verified_at' => now(),       // akun demo dianggap sudah terverifikasi
+            ])->save();
+        }
     }
 }

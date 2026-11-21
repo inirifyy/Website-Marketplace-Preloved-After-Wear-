@@ -39,7 +39,17 @@
             <dd>{{ $user->email }}</dd>
 
             <dt>Telepon</dt>
-            <dd>{{ $user->phone ?: 'Belum diisi' }}</dd>
+            <dd>
+                {{ $user->phone ? '+'.\App\Support\Phone::normalize($user->phone) : 'Belum diisi' }}
+                @if (! $user->isAdmin())
+                    @if ($user->hasVerifiedPhone())
+                        <span class="aw-badge aw-badge--approved">Terverifikasi</span>
+                    @else
+                        <span class="aw-badge aw-badge--rejected">Belum diverifikasi</span>
+                        <a href="{{ route('phone.verification.notice') }}">Verifikasi sekarang</a>
+                    @endif
+                @endif
+            </dd>
 
             <dt>Alamat</dt>
             <dd>{{ $user->address ?: 'Belum diisi' }}</dd>

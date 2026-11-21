@@ -2,7 +2,6 @@
 @section('title', 'After Wear — Fesyen Preloved Terkurasi')
 @section('content')
 @php
-  $categories = [['Atasan','Kemeja, Kaos & Blus'],['Bawahan','Kulot, Denim & Rok'],['Dress','Midi, Maxi & Casual'],['Sepatu','Loafers, Boots & Sneaker'],['Tas','Tote, Kulit & Selempang'],['Aksesoris','Syal, Sabuk & Topi']];
   $why = [['Kurasi Berkualitas','Pemeriksaan kondisi ketat sebelum produk ditayangkan: keaslian bahan, kebersihan standar laundry ozon, dan grading akurat.'],
           ['Harga Masuk Akal','Pakaian bermerek dan arsip lokal berkualitas dengan diskon hingga 70% di bawah harga butik resmi.'],
           ['Dampak Nyata','Perpanjang siklus hidup pakaian dan kurangi limbah kain sintetis di TPA lokal. Setiap transaksi terdata jejak lingkungannya.'],
@@ -15,7 +14,7 @@
       <p class="mute">Setiap helai pakaian preloved yang Anda pilih memangkas hingga 82% jejak karbon dan menghemat ribuan liter air. Mari wujudkan lemari berkelanjutan untuk masa depan Indonesia.</p>
       <div class="row">
         <a class="btn dark" href="{{ url('/education') }}">Pelajari Dampaknya</a>
-        <a class="btn" href="{{ url('/products') }}">Jelajah Kurasi</a>
+        <a class="btn" href="{{ route('products.index') }}">Jelajah Kurasi</a>
       </div>
     </div>
     <figure>
@@ -28,9 +27,12 @@
 <section class="sec"><div class="wrap">
   <h2>Kategori Pilihan</h2>
   <div class="grid g3 cats">
-    @foreach($categories as [$name, $desc])
-      <a href="{{ url('/products?category='.urlencode($name)) }}"><b>{{ $name }}</b><span class="small mute">{{ $desc }}</span></a>
-    @endforeach
+    {{-- $categories dikirim HomeController (kategori aktif dari database), tautan memakai slug --}}
+    @forelse($categories->take(6) as $category)
+      <a href="{{ route('products.index', ['category' => $category->slug]) }}"><b>{{ $category->name }}</b><span class="small mute">{{ \Illuminate\Support\Str::limit($category->description, 60) }}</span></a>
+    @empty
+      <p class="mute">Belum ada kategori. Jalankan <code>php artisan db:seed</code>.</p>
+    @endforelse
   </div>
 </div></section>
 
@@ -47,8 +49,8 @@
 <section class="sec"><div class="wrap">
   <h2>Produk Terbaru</h2>
   <div class="grid g3">
-    @forelse($featuredProducts->take(5) as $product)
-      @include('partials.product-card', ['product' => $product])
+    @forelse($featuredProducts->take(6) as $product)
+      <x-product-card :product="$product" />
     @empty
       <p class="mute">Belum ada produk yang ditayangkan.</p>
     @endforelse
@@ -66,6 +68,6 @@
 
 <div class="wrap" style="margin-top:48px"><div class="cta">
   <div><h2 style="font-size:30px">Punya Pakaian Preloved Berkualitas?</h2><p>Daftarkan pakaian Anda atau buka kurasi UMKM Anda sendiri. Ubah koleksi lemari menjadi penghasilan sirkular bernilai tinggi.</p></div>
-  <a class="btn" style="background:#fff;color:#000" href="{{ url('/seller/submissions/create') }}">Mulai Jual Barang</a>
+  <a class="btn" style="background:#fff;color:#000" href="{{ route('seller.submissions.create') }}">Mulai Jual Barang</a>
 </div></div>
 @endsection

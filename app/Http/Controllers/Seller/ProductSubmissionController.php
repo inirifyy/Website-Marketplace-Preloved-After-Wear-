@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
 
@@ -31,7 +32,7 @@ class ProductSubmissionController extends Controller
             'name'             => ['required', 'string', 'max:200'],
             'description'      => ['required', 'string'],
             'price'            => ['required', 'numeric', 'min:1000', 'max:9999999999'],
-            'item_condition'   => ['nullable', 'string', 'max:100'],
+            'item_condition'   => ['nullable', Rule::in(['Seperti baru', 'Baik', 'Layak pakai'])],
             'material'         => ['nullable', 'string', 'max:100'],
             'usage_duration'   => ['nullable', 'string', 'max:100'],
             'flaws'            => ['nullable', 'string'],

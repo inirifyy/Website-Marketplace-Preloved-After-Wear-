@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // Pengiriman kode OTP verifikasi nomor HP (lihat app/Services/PhoneOtpService.php)
+    'otp' => [
+        'driver'       => env('OTP_DRIVER', 'log'),          // log | fonnte
+        'show_code'    => env('OTP_SHOW_CODE', false),       // tampilkan kode di layar (HANYA dev)
+        'fonnte_token' => env('FONNTE_TOKEN'),
+    ],
+
 ];

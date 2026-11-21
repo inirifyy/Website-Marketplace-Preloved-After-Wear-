@@ -54,7 +54,12 @@
             <legend>Detail barang</legend>
             <div class="aw-field">
                 <label for="item_condition">Kondisi</label>
-                <input class="aw-input" id="item_condition" name="item_condition" type="text" maxlength="100" placeholder="Contoh: Seperti baru" value="{{ old('item_condition') }}">
+                <select class="aw-input" id="item_condition" name="item_condition">
+                    <option value="">Pilih kondisi</option>
+                    @foreach (['Seperti baru', 'Baik', 'Layak pakai'] as $cond)
+                        <option value="{{ $cond }}" @selected(old('item_condition') === $cond)>{{ $cond }}</option>
+                    @endforeach
+                </select>
                 @error('item_condition') <p class="aw-field__error">{{ $message }}</p> @enderror
             </div>
             <div class="aw-field">
