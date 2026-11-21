@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
@@ -27,12 +28,16 @@ class ProductController extends Controller
 
         $categories = Category::active()->ordered()->get();
 
+        // Versi lama (query builder langsung), dinonaktifkan:
+        // $categories = DB::table('categories')->orderBy('name')->get();
+
         return view('products.index', compact('products', 'categories'));
     }
 
     /** Detail produk. Produk yang belum disetujui admin dianggap tidak ada (404). */
     public function show(Product $product): View
     {
+        // Hanya produk yang sudah disetujui admin yang boleh dilihat publik.
         abort_unless($product->approval_status === 'approved', 404);
 
         $product->load(['category', 'media', 'seller', 'reviews.reviewer']);
