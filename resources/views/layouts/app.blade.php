@@ -8,7 +8,7 @@
     <meta name="description" content="@yield('meta_description', 'After Wear: marketplace barang preloved layak pakai untuk membantu mengurangi limbah tekstil.')">
 
     {{-- Judul dinamis: tiap halaman mengisi @section('title', '...') --}}
-   <title>@hasSection('title') @yield('title') | After Wear @else After Wear | Marketplace Preloved @endif</title>
+    <title>@hasSection('title') @yield('title') | After Wear @else After Wear | Marketplace Preloved @endif</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}">
 
     {{-- Font dari konfigurasi vite.config.js (kosong jika belum di-build) --}}
@@ -23,6 +23,10 @@
     --}}
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
     <link rel="stylesheet" href="https://fonts.bunny.net/css?family=cormorant-garamond:400,500,600,500i|inter:400,500,600&display=swap">
+
+    {{-- Font tambahan: EB Garamond & Plus Jakarta Sans (dari layout kedua) --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     {{--
         Gaya dasar tata letak + palet warna proyek.
@@ -141,8 +145,28 @@
 </head>
 <body class="aw-body">
 
-    {{-- Navbar dan footer hanya dipanggil di sini, JANGAN di-include lagi di halaman lain --}}
-    @include('partials.navbar')
+    {{-- ================= NAVBAR (inline, dari layout kedua) ================= --}}
+    {{-- Versi lama: @include('partials.navbar') -- dinonaktifkan agar navbar tidak tampil dobel --}}
+    <header class="nav"><div class="wrap">
+      <a class="brand" href="{{ url('/') }}">After Wear</a>
+      <form class="search" action="{{ url('/products') }}" method="GET">
+        <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari pakaian preloved..." aria-label="Cari produk">
+      </form>
+      <ul>
+        <li><a href="{{ url('/') }}" class="{{ request()->is('/') ? 'on' : '' }}">Beranda</a></li>
+        <li><a href="{{ url('/education') }}" class="{{ request()->is('education*') ? 'on' : '' }}">Edukasi</a></li>
+        <li><a href="{{ url('/testimonials') }}">Testimoni</a></li>
+        <li><a href="{{ url('/seller/submissions/create') }}">Jual Barang</a></li>
+      </ul>
+      <div class="acts">
+        @guest
+          <a class="btn" href="{{ url('/login') }}">Masuk</a>
+          <a class="btn dark" href="{{ url('/register') }}">Daftar</a>
+        @else
+          <a class="btn" href="{{ url('/profile') }}">{{ auth()->user()->name }}</a>
+        @endguest
+      </div>
+    </div></header>
 
     <main class="aw-main">
         {{-- Pesan sukses/gagal dari controller: redirect()->with('success', '...') dan error validasi form --}}
@@ -173,7 +197,21 @@
         @yield('content')
     </main>
 
-    @include('partials.footer')
+    {{-- ================= FOOTER (inline, dari layout kedua) ================= --}}
+    {{-- Versi lama: @include('partials.footer') -- dinonaktifkan agar footer tidak tampil dobel --}}
+    <footer class="foot">
+      <div class="wrap">
+        <div style="max-width:380px">
+          <div class="brand">After Wear</div>
+          <p class="mute" style="margin-top:8px">Marketplace kurasi pakaian preloved terpercaya untuk mendukung fashion sirkular dan UMKM Indonesia.</p>
+        </div>
+        <div>
+          <b>Kontak &amp; Ekosistem</b>
+          <p class="mute" style="margin-top:8px">WhatsApp UMKM: +62 852-4128-6043<br>Instagram: @afterwear.id<br>Makassar, Indonesia</p>
+        </div>
+      </div>
+      <div class="wrap copy"><span>Hak cipta © 2026 After Wear.</span><span>Pemberdayaan UMKM Fesyen Indonesia</span></div>
+    </footer>
 
     {{-- Tempat JavaScript tambahan khusus halaman: @push('scripts') ... @endpush --}}
     @stack('scripts')
