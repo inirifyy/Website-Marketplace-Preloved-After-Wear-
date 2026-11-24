@@ -2,11 +2,29 @@
 @section('title', 'After Wear — Fesyen Preloved Terkurasi')
 @section('content')
 @php
-  $why = [['Kurasi Berkualitas','Pemeriksaan kondisi ketat sebelum produk ditayangkan: keaslian bahan, kebersihan standar laundry ozon, dan grading akurat.'],
-          ['Harga Masuk Akal','Pakaian bermerek dan arsip lokal berkualitas dengan diskon hingga 70% di bawah harga butik resmi.'],
-          ['Dampak Nyata','Perpanjang siklus hidup pakaian dan kurangi limbah kain sintetis di TPA lokal. Setiap transaksi terdata jejak lingkungannya.'],
-          ['Aman via WhatsApp','Komunikasi langsung dan transparan dengan penjual terverifikasi. Konfirmasi ukuran dan video real time sebelum membayar.']];
+  // Ikon kategori dipilih dari kata kunci pada nama kategori (urutan penting: "atasan" dicek sebelum "tas").
+  $iconFor = function ($name) {
+      $n = mb_strtolower($name);
+      return match (true) {
+          str_contains($n, 'atasan')    => 'shirt',
+          str_contains($n, 'outer')     => 'shirt',
+          str_contains($n, 'bawahan')   => 'pants',
+          str_contains($n, 'dress')     => 'dress',
+          str_contains($n, 'sepatu')    => 'shoe',
+          str_contains($n, 'tas')       => 'bag',
+          str_contains($n, 'aksesoris') => 'plus',
+          default                       => 'tag',
+      };
+  };
+
+  $why = [
+    ['shield', 'Kurasi Berkualitas', 'Pemeriksaan kondisi ketat sebelum produk ditayangkan: keaslian bahan, kebersihan standar laundry ozon, dan grading akurat tanpa kompromi.'],
+    ['tag',    'Harga Masuk Akal',   'Pakaian bermerek dan arsip lokal berkualitas dengan diskon hingga 70% di bawah harga butik resmi tanpa penurunan nilai estetika.'],
+    ['leaf',   'Dampak Nyata',       'Perpanjang siklus hidup pakaian dan kurangi limbah kain sintetis di TPA lokal. Setiap transaksi terdata kontribusi jejak lingkungannya.'],
+    ['chat',   'Aman via WhatsApp',  'Komunikasi langsung dan transparan dengan penjual terverifikasi. Konfirmasi detail ukuran dan video real-time sebelum Anda membayar.'],
+  ];
 @endphp
+
 <div class="wrap">
   <section class="hero">
     <div>
@@ -26,10 +44,14 @@
 
 <section class="sec"><div class="wrap">
   <h2>Kategori Pilihan</h2>
-  <div class="grid g3 cats">
+  <div class="cat-grid">
     {{-- $categories dikirim HomeController (kategori aktif dari database), tautan memakai slug --}}
     @forelse($categories->take(6) as $category)
-      <a href="{{ route('products.index', ['category' => $category->slug]) }}"><b>{{ $category->name }}</b><span class="small mute">{{ \Illuminate\Support\Str::limit($category->description, 60) }}</span></a>
+      <a class="cat-card" href="{{ route('products.index', ['category' => $category->slug]) }}">
+        <span class="cat-ico">@include('partials.icon', ['name' => $iconFor($category->name), 'size' => 18])</span>
+        <b>{{ $category->name }}</b>
+        <span class="small">{{ \Illuminate\Support\Str::limit($category->description, 42) }}</span>
+      </a>
     @empty
       <p class="mute">Belum ada kategori. Jalankan <code>php artisan db:seed</code>.</p>
     @endforelse
@@ -39,9 +61,13 @@
 <section class="sec white"><div class="wrap">
   <h2>Kenapa After Wear?</h2>
   <p class="mute" style="max-width:640px;margin:-12px 0 24px">Kami mendefinisikan ulang makna berpakaian dengan menghubungkan konsumen berkesadaran tinggi dengan UMKM thrift terkurasi. Menghadirkan fesyen sirkular yang transparan, etis, dan bermartabat.</p>
-  <div class="grid g4">
-    @foreach($why as [$t, $d])
-      <div class="card"><h3 style="font-size:20px;margin-bottom:8px">{{ $t }}</h3><p class="mute small">{{ $d }}</p></div>
+  <div class="why-grid">
+    @foreach($why as [$icon, $t, $d])
+      <div class="why-card">
+        <span class="why-ico">@include('partials.icon', ['name' => $icon, 'size' => 18])</span>
+        <h3>{{ $t }}</h3>
+        <p>{{ $d }}</p>
+      </div>
     @endforeach
   </div>
 </div></section>
